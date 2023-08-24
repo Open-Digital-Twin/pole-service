@@ -18,7 +18,7 @@ print(EVENT_STORE_URL)
 # Send event to parent
 
 class KTwinEvent:
-    def __init__(self, cloud_event):
+    def __init__(self, cloud_event: CloudEvent):
         self.cloud_event = cloud_event
         ce_type_split = cloud_event["type"].split(".")
         if len(ce_type_split) > 2:
@@ -77,6 +77,5 @@ def update_twin_event(ktwin_event: KTwinEvent):
     if response.status_code != 202:
         raise Exception("Error while updating twin event", response)
 
-    print(response)
     return response
 

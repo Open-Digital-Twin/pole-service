@@ -25,7 +25,7 @@ def home():
     )
 
     handle_event(request, 'air-quality-observed', handle_air_quality_observed_event)
-        
+
     # Return 204 - No-content
     return "", 204
 
