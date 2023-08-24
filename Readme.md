@@ -134,3 +134,45 @@ The following object is stored in event store:
     }
 }
 ```
+
+### Weather Quality Observed
+
+Expected behavior: the City Pole will process the event, calculate the air quality levels based on the provided values and update the record in Event Store.
+
+
+pressureTendency
+atmosphericPressure
+dewpoint
+FeelsLikeTemperature
+temperature
+illuminance
+precipitation
+relativeHumidity
+snowHeight
+solarRadiation
+streamGauge
+uVIndexMax
+visibility
+WindDirection
+WindSpeed
+
+
+```json
+{
+    "FeelsLikeTemperature": 8,
+    "WindDirection": 8,
+    "WindSpeed": 8,
+    "atmosphericPressure": 10,
+    "dewpoint": 8,
+    "illuminance": 8,
+    "precipitation": 8,
+    "pressureTendency": "raising",
+    "relativeHumidity": 8,
+    "snowHeight": 8,
+    "solarRadiation": 8,
+    "streamGauge": 8,
+    "temperature": 8,
+    "uVIndexMax": 8,
+    "visibility": 8
+}
+```

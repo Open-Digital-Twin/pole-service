@@ -24,15 +24,6 @@ class KTwinEvent:
             self.twin_interface = ce_type_split[2]
         self.twin_instance = cloud_event["source"]
 
-    def getTwinInterface(self):
-        return self.twin_interface
-    
-    def getTwinInstance(self):
-        return self.twin_instance
-    
-    def getCloudEvent(self) -> CloudEvent:
-        return self.cloud_event
-
 def build_attributes(type, source):
     attributes = {
         "type" : type,
@@ -51,15 +42,15 @@ def send_message(target_address, source_address, message_type, data):
 
 def handle_event(request: requests.Request, twinInterface: str, callback):
     ktwin_event = handle_request(request)
-    if ktwin_event.getTwinInterface() == twinInterface:
+    if ktwin_event.twin_interface == twinInterface:
         callback(ktwin_event)
 
 def handle_request(request) -> KTwinEvent:
     cloud_event = from_http(request.headers, request.get_data())
     return KTwinEvent(cloud_event)
 
-def get_latest_twin_event(twinInterface, twinInstance):
-    url = get_event_store_url() + "/api/v1/twin-events/%s/%s/latest" % (twinInterface, twinInstance)
+def get_latest_twin_event(twin_interface, twin_instance):
+    url = get_event_store_url() + "/api/v1/twin-events/%s/%s/latest" % (twin_interface, twin_instance)
     response = requests.get(url)
 
     if response.status_code == 404:
@@ -70,7 +61,7 @@ def get_latest_twin_event(twinInterface, twinInstance):
 
 def update_twin_event(ktwin_event: KTwinEvent):
     url = get_event_store_url() + "/api/v1/twin-events"
-    headers, body = to_binary(ktwin_event.getCloudEvent())
+    headers, body = to_binary(ktwin_event.cloud_event)
     response = requests.post(url, data=body, headers=headers)
 
     if response.status_code != 202:
