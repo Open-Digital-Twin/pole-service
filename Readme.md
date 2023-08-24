@@ -137,36 +137,45 @@ The following object is stored in event store:
 
 ### Weather Quality Observed
 
-Expected behavior: the City Pole will process the event, calculate the air quality levels based on the provided values and update the record in Event Store.
+Expected behavior: the City Pole will process the event, calculates the feels like temperature, dew point and update the record in Event Store.
 
+```sh
+curl --request POST \
+  --url http://localhost:8081/ \
+  --header 'Content-Type: application/json' \
+  --header 'ce-id: 123' \
+  --header 'ce-source: weather-observed-001' \
+  --header 'ce-specversion: 1.0' \
+  --header 'ce-time: 2021-10-16T18:54:04.924Z' \
+  --header 'ce-type: ktwin.real.weather-observed' \
+  --data '{
+    "atmosphericPressure": 10,
+    "temperature": 8,
+    "illuminance": 8,
+    "precipitation": 8,
+    "relativeHumidity": 8,
+    "snowHeight": 8,
+    "solarRadiation": 8,
+    "streamGauge": 8,
+    "uVIndexMax": 8,
+    "visibility": 8,
+    "WindDirection": 8,
+    "WindSpeed": 8
+}'
+```
 
-pressureTendency
-atmosphericPressure
-dewpoint
-FeelsLikeTemperature
-temperature
-illuminance
-precipitation
-relativeHumidity
-snowHeight
-solarRadiation
-streamGauge
-uVIndexMax
-visibility
-WindDirection
-WindSpeed
-
+The following object is stored in event store:
 
 ```json
 {
-    "FeelsLikeTemperature": 8,
+    "FeelsLikeTemperature": -1.9253082357521691,
     "WindDirection": 8,
     "WindSpeed": 8,
     "atmosphericPressure": 10,
-    "dewpoint": 8,
+    "dewpoint": -90.4,
     "illuminance": 8,
     "precipitation": 8,
-    "pressureTendency": "raising",
+    "pressureTendency": "steady",
     "relativeHumidity": 8,
     "snowHeight": 8,
     "solarRadiation": 8,
