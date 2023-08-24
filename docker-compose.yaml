@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  pole-service:
+    image: dev.local/pole-service:0.1
+    container_name: pole-service
+    ports:
+      - 8081:8081
