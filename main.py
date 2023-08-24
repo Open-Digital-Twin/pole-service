@@ -1,8 +1,12 @@
+import os
 import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request
 from modules.ktwin import handle_request, handle_event, KTwinEvent, get_latest_twin_event, update_twin_event
+
+if os.getenv("ENV") == "local":
+    load_dotenv('local.env')
 
 app = Flask(__name__)
 
@@ -11,8 +15,6 @@ handler.setFormatter(logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
-
-load_dotenv('local.env')
 
 @app.route("/", methods=["POST"])
 def home():

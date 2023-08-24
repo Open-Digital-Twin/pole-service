@@ -6,9 +6,8 @@ EVENT_REAL_TO_VIRTUAL = "ktwin.real.%s"
 EVENT_VIRTUAL_TO_REAL = "ktwin.virtual.%s"
 EVENT_TO_EVENT_STORE = "ktwin.event.store"
 
-EVENT_STORE_URL = "http://localhost:8080" #os.getenv("KTWIN_EVENT_STORE")
-
-print(EVENT_STORE_URL)
+def get_event_store_url():
+    return os.getenv("KTWIN_EVENT_STORE")
 
 # Decode Request to Cloud Event
 # Send Request
@@ -60,7 +59,7 @@ def handle_request(request) -> KTwinEvent:
     return KTwinEvent(cloud_event)
 
 def get_latest_twin_event(twinInterface, twinInstance):
-    url = EVENT_STORE_URL + "/api/v1/twin-events/%s/%s/latest" % (twinInterface, twinInstance)
+    url = get_event_store_url() + "/api/v1/twin-events/%s/%s/latest" % (twinInterface, twinInstance)
     response = requests.get(url)
 
     if response.status_code == 404:
@@ -70,7 +69,7 @@ def get_latest_twin_event(twinInterface, twinInstance):
     return KTwinEvent(cloud_event)
 
 def update_twin_event(ktwin_event: KTwinEvent):
-    url = EVENT_STORE_URL + "/api/v1/twin-events"
+    url = get_event_store_url() + "/api/v1/twin-events"
     headers, body = to_binary(ktwin_event.getCloudEvent())
     response = requests.post(url, data=body, headers=headers)
 
