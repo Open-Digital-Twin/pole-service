@@ -2,6 +2,10 @@
 
 This service implements the Pole business logic for Smart Grids DTDL use case.
 
+1. Calculate the different Quality Levels based on the sensors measurements.
+2. Calculates the feel like temperature, drew point and pressure tendency.
+3. In case of a high value for SO2 gas in the area, it generates an event to the parent Neighborhood Twin.
+
 ## Setup Virtual environment
 
 ```bash

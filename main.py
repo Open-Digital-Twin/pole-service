@@ -4,7 +4,7 @@ import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request
-from modules.ktwin import handle_request, handle_event, KTwinEvent, get_latest_twin_event, update_twin_event
+from modules.ktwin import handle_request, handle_event, KTwinEvent, Twin, get_latest_twin_event, update_twin_event, get_parent_twins, push_to_virtual_twin
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -46,6 +46,18 @@ def handle_air_quality_observed_event(event: KTwinEvent):
     air_quality_observed["SH2_level"] = air_quality_level()
 
     update_twin_event(event)
+
+    if air_quality_observed["SO2_level"] > 10:
+        parent_twins = get_parent_twins()
+
+        if (parent_twins) > 0:
+            send_air_quality_to_neighborhood(air_quality_observed, parent_twins[0])
+
+def send_air_quality_to_neighborhood(air_quality_observed, parent_twin: Twin):
+    data = {
+        "SO2_level": air_quality_observed["SO2_level"]
+    }
+    push_to_virtual_twin(parent_twin.twin_interface, parent_twin.twin_instance, data=data)
 
 def air_quality_level():
     return {

@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 from cloudevents.http import CloudEvent, to_structured, from_http, to_binary
 
@@ -8,6 +9,9 @@ EVENT_TO_EVENT_STORE = "ktwin.event.store"
 
 def get_event_store_url():
     return os.getenv("KTWIN_EVENT_STORE")
+
+def get_broker_url():
+    return os.getenv("KTWIN_BROKER")
 
 # Decode Request to Cloud Event
 # Send Request
@@ -24,18 +28,36 @@ class KTwinEvent:
             self.twin_interface = ce_type_split[2]
         self.twin_instance = cloud_event["source"]
 
-def build_attributes(type, source):
+def build_cloud_event(ce_type, ce_source, data):
     attributes = {
-        "type" : type,
-        "source" : source
+        "type" : ce_type,
+        "source" : ce_source
     }
-    return attributes
+    return CloudEvent(attributes, data)
 
-def send_message(target_address, source_address, message_type, data):
-    attributes = build_attributes(message_type, source_address)
+def push_to_real_twin(twin_interface, twin_instance, data):
+    ce_type = EVENT_VIRTUAL_TO_REAL.format(twin_interface)
+    ce_source = twin_instance
+    cloud_event = build_cloud_event(ce_type, ce_source, data)
+    headers, body = to_structured(cloud_event)
 
-    event = CloudEvent(attributes, data)
-    headers, body = to_structured(event)
+    response = requests.post(get_broker_url(), headers=headers, data=body)
+
+    if response.status_code != 202:
+        raise Exception("Error when pushing to event broker", response)
+
+
+def push_to_virtual_twin(twin_interface, twin_instance, data):
+    ce_type = EVENT_REAL_TO_VIRTUAL.format(twin_interface)
+    ce_source = twin_instance
+    cloud_event = build_cloud_event(ce_type, ce_source, data)
+    headers, body = to_structured(cloud_event)
+
+    response = requests.post(get_broker_url(), headers=headers, data=body)
+
+    if response.status_code != 202:
+        raise Exception("Error when pushing to event broker", response)
+    
 
     requests.post(target_address, headers=headers, data=body)
     print(f"Sent {event['id']} from {event['source']} with " f"{event.data}")
@@ -69,3 +91,20 @@ def update_twin_event(ktwin_event: KTwinEvent):
 
     return response
 
+class Twin:
+    def __init__(self, twin_interface, twin_instance) -> None:
+        self.twin_interface = twin_interface
+        self.twin_instance = twin_instance
+
+def get_parent_twins() -> list[Twin]:
+    parent_twins = os.getenv("PARENT_TWINS")
+    if parent_twins is None:
+        return parent_twins
+    j = json.loads(parent_twins)
+
+    twin_list = list()
+    for twin_json in j:
+        twin = Twin(**twin_json)
+        twin_list.append(twin)
+
+    return twin_list
