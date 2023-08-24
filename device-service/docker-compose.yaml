@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  device-service:
+    image: dev.local/device-service:0.1
+    container_name: device-service
+    ports:
+      - 8081:8081
